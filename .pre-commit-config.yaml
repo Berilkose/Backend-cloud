@@ -1,0 +1,10 @@
+repos:
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    # Ruff'ın güncel ve kararlı bir versiyonu
+    rev: v0.4.4
+    hooks:
+      # 1. Kod analizi (Linting) kurallarını kontrol eder
+      - id: ruff
+        args: [ --fix ] # Basit hataları otomatik düzeltebilmesi için
+      # 2. Kod biçimlendirmeyi (Formatting) kontrol eder (PEP 8 standartları)
+      - id: ruff-format
