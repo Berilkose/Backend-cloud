@@ -17,19 +17,14 @@ jobs:
       - name: Checkout latest code
         uses: actions/checkout@v4
 
-      # Bağımlılıkları yükle ve ortamı hazırla (Yetki istemeyen, doğrudan nokta atışı yöntem)
+      # Sanal ortam klasör izinlerine takılmamak için doğrudan sistem context'ini kullanıyoruz
       - name: Install dependencies
         run: |
-          if (Test-Path .venv) {
-            echo "Virtual environment exists."
-          } else {
-            echo "Creating virtual environment using local Python..."
-            & "C:\Users\koseb\AppData\Local\Programs\Python\Python312\python.exe" -m venv .venv
-          }
-          & .venv\Scripts\Activate.ps1
+          echo "Installing dependencies using system context..."
+          python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      # Eğer daha önce port 8000'de çalışan bir Django varsa onu kapat
+      # Eğer port 8000'de çalışan eski bir Django süreci varsa güvenli bir şekilde kapatıyoruz
       - name: Kill previous app instance
         run: |
           echo "Checking for existing process on port 8000..."
@@ -45,10 +40,9 @@ jobs:
             echo "No process running on port 8000."
           }
 
-      # Yeni versiyonu yerel Python yoluyla arka planda sorunsuzca başlat
+      # Uygulamayı doğrudan arka planda global python komutuyla başlatıyoruz
       - name: Launch new version in background
         run: |
-          echo "Starting Django server in background..."
-          & .venv\Scripts\Activate.ps1
-          Start-Process "C:\Users\koseb\AppData\Local\Programs\Python\Python312\python.exe" -ArgumentList "manage.py runserver 127.0.0.1:8000" -NoNewWindow
+          echo "Starting Django server..."
+          Start-Process python -ArgumentList "manage.py runserver 127.0.0.1:8000" -NoNewWindow
           echo "Application deployed successfully on localhost:8000"
