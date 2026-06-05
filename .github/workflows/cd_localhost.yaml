@@ -1,9 +1,8 @@
 name: CD Localhost
 
-# b. Trigger: Sadece CI Semantic Versioning workflow'u main branch'inde başarıyla tamamlandığında çalışır
 on:
   workflow_run:
-    workflows: ["CI Versioning"] # Sizin CI workflow'unuzun "name" değeriyle birebir aynı olmalı
+    workflows: ["CI Versioning"]
     types:
       - completed
     branches:
@@ -11,33 +10,26 @@ on:
 
 jobs:
   deploy:
-    # Sadece CI başarıyla bittiyse bu job'ı çalıştır
     if: ${{ github.event.workflow_run.conclusion == 'success' }}
-    # c. Environment: Lokal self-hosted runner üzerinde çalışacak
     runs-on: self-hosted
 
     steps:
-      # d. Deployment Steps: En güncel kodu çek
       - name: Checkout latest code
         uses: actions/checkout@v4
 
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.12' #python sürümü
-
-      # Bağımlılıkları yükle ve ortamı hazırla
+      # Bağımlılıkları yükle ve ortamı hazırla (Yetki istemeyen, doğrudan nokta atışı yöntem)
       - name: Install dependencies
         run: |
           if (Test-Path .venv) {
             echo "Virtual environment exists."
           } else {
-            python -m venv .venv
+            echo "Creating virtual environment using local Python..."
+            & "C:\Users\koseb\AppData\Local\Programs\Python\Python312\python.exe" -m venv .venv
           }
           & .venv\Scripts\Activate.ps1
           pip install -r requirements.txt
 
-      # Eğer daha önce arka planda çalışan bir Django (port 8000) varsa onu kapat (kill)
+      # Eğer daha önce port 8000'de çalışan bir Django varsa onu kapat
       - name: Kill previous app instance
         run: |
           echo "Checking for existing process on port 8000..."
@@ -53,11 +45,10 @@ jobs:
             echo "No process running on port 8000."
           }
 
-      # Yeni versiyonu arka planda başlat (launch in the background)
+      # Yeni versiyonu yerel Python yoluyla arka planda sorunsuzca başlat
       - name: Launch new version in background
         run: |
           echo "Starting Django server in background..."
           & .venv\Scripts\Activate.ps1
-          # Start-Process ile Django'yu arka planda görünmez bir işlem olarak başlatıyoruz
-          Start-Process python -ArgumentList "manage.py runserver 127.0.0.1:8000" -NoNewWindow
+          Start-Process "C:\Users\koseb\AppData\Local\Programs\Python\Python312\python.exe" -ArgumentList "manage.py runserver 127.0.0.1:8000" -NoNewWindow
           echo "Application deployed successfully on localhost:8000"
