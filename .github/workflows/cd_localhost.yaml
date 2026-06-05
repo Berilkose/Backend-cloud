@@ -40,7 +40,7 @@ jobs:
       # UYGULAMAYI BAŞLATIRKEN KLASÖRÜ BELİRTİYORUZ
       - name: Launch new version in background
         # NOT: 'backend' yazan yere manage.py dosyanızın olduğu klasörün tam adını yazın!
-        working-directory: "D:\calismalar\EE471 Mini Project\MiniProject4\backend-local\backend_local_proj" 
+        working-directory: "D:\\calismalar\\EE471 Mini Project\\MiniProject4\backend-local\\backend_local_proj" 
         run: |
           echo "Starting Django server from working directory..."
           Start-Process python -ArgumentList "manage.py runserver 127.0.0.1:8000" -NoNewWindow
