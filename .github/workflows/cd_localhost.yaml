@@ -21,13 +21,18 @@ jobs:
       - name: Checkout latest code
         uses: actions/checkout@v4
 
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
       # Bağımlılıkları yükle ve ortamı hazırla
       - name: Install dependencies
         run: |
           if (Test-Path .venv) {
             echo "Virtual environment exists."
           } else {
-            & "C:\Users\koseb\AppData\Local\Programs\Python\Python39\python.exe" -m venv .venv
+            python -m venv .venv
           }
           & .venv\Scripts\Activate.ps1
           pip install -r requirements.txt
