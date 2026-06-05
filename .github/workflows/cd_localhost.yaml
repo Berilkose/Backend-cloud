@@ -17,12 +17,11 @@ jobs:
       - name: Checkout latest code
         uses: actions/checkout@v4
 
-      # Farklı workspace sorunlarından etkilenmemek için dosya okuma adımını atlıyoruz
       - name: Bypass dependencies check
         run: |
-          echo "Host machine already has dependencies configured. Skipping requirements.txt..."
+          echo "Skipping requirements check..."
 
-      # Eğer port 8000'de çalışan eski bir Django süreci varsa kapat
+      # Eğer port 8000'de çalışan eski bir süreç varsa kapat
       - name: Kill previous app instance
         run: |
           echo "Checking for existing process on port 8000..."
@@ -38,9 +37,11 @@ jobs:
             echo "No process running on port 8000."
           }
 
-      # Uygulamayı doğrudan arka planda sistem python komutuyla başlat
+      # UYGULAMAYI BAŞLATIRKEN KLASÖRÜ BELİRTİYORUZ
       - name: Launch new version in background
+        # NOT: 'backend' yazan yere manage.py dosyanızın olduğu klasörün tam adını yazın!
+        working-directory: "D:\calismalar\EE471 Mini Project\MiniProject4\backend-local\backend_local_proj" 
         run: |
-          echo "Starting Django server..."
+          echo "Starting Django server from working directory..."
           Start-Process python -ArgumentList "manage.py runserver 127.0.0.1:8000" -NoNewWindow
           echo "Application deployed successfully on localhost:8000"
