@@ -17,4 +17,4 @@ COPY . .
 EXPOSE 8000
 
 # Gunicorn ile Django projesini 8000 portundan ayağa kaldırıyoruz
-CMD ["gunicorn", "backend_local_proj.wsgi:application", "--bind", "0.0.0.0:8000"]
+CMD ["gunicorn", "backend_local_proj.backend_local_proj.wsgi:application", "--bind", "0.0.0.0:8000"]
