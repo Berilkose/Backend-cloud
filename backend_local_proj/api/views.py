@@ -3,6 +3,7 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
+from django.core.files.storage import default_storage
 #from huggingface_hub import login
 #from transformers import pipeline
 #from diffusers import StableDiffusionPipeline
@@ -39,7 +40,25 @@ class RoboMunchEngine:
                 **kwargs
             )
         return self.pipelines[task]
-
+    
+    def speech_recognition(self, audio_path):
+        """
+        Kendisine verilen ses dosyasının (.wav vb.) yolunu alır,
+        Facebook Wav2Vec2 modelini yükler ve içindeki konuşmayı metne çevirir.
+        """
+        # Sizin belirttiğiniz göreve ve modele göre pipeline'ı çağırıyoruz
+        pipe = self._get_pipeline(
+            "automatic-speech-recognition", 
+            "facebook/wav2vec2-large-960h"
+        )
+        
+        print(f"--- Processing Audio: {audio_path} ---")
+        out = pipe(audio_path)
+        
+        # Model çıktısı sözlük yapısındadır: {'text': 'HELLO WORLD'}
+        # Çıkan metni temizleyip geri döndürüyoruz
+        return out.get("text", "").strip()
+    
     def chat_reply(self, message):
         pipe = self._get_pipeline("text-generation", "HuggingFaceTB/SmolLM2-135M-Instruct")
         
@@ -122,6 +141,23 @@ def paint_image(request):
     except Exception as e:
         return Response({'error': f"Görsel motoru hatası: {str(e)}"}, status=500)
 
+@api_view(['POST'])
+def speech_to_text_view(request):
+    munch_engine = RoboMunchEngine()
+    audio_file = request.FILES.get('audio')
+    # Gelen geçici dosyayı sunucuya kaydet
+    file_name = default_storage.save('temp_audio.wav', audio_file)
+    file_path = default_storage.path(file_name)
+    
+    # Sizin yazdığınız model fonksiyonunu çağırıyoruz:
+    # (Engine nesnesinin lokalde kurulu olduğunu varsayarak)
+    recognized_text = munch_engine.speech_recognition(file_path)
+    
+    # Geçici dosyayı temizle
+    if os.path.exists(file_path):
+        os.remove(file_path)
+        
+    return Response({'text': recognized_text})
 
 # ========================================================
 # ÖDEV 2. TASK İÇİN EKLENEN BULUT ENDPOINT'LERİ
