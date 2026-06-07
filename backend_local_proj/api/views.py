@@ -3,18 +3,20 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
-from huggingface_hub import login
-from transformers import pipeline
-from diffusers import StableDiffusionPipeline
+#from huggingface_hub import login
+#from transformers import pipeline
+#from diffusers import StableDiffusionPipeline
 from PIL import Image
-import torch
+#import torch
 import io
 
 # ========================================================
 # ROBOMUNCH ENTEGRE YAPAY ZEKA MOTORU
 # ========================================================
 class RoboMunchEngine:
+    
     def __init__(self):
+        from huggingface_hub import login
         self.pipelines = {}
         self.device = "cpu"  # CPU üzerinde çalıştırıyoruz
         
@@ -22,10 +24,11 @@ class RoboMunchEngine:
         my_token = os.getenv("HF_TOKEN")
         if my_token:
             login(token=my_token)
-            
+
         print(f"--- RoboMunch Engine Initialized (CPU) ---")
 
     def _get_pipeline(self, task, model_name, **kwargs):
+        from transformers import pipeline
         if task not in self.pipelines:
             print(f"--- Loading {task}: {model_name} ---")
             self.pipelines[task] = pipeline(
@@ -59,6 +62,8 @@ class RoboMunchEngine:
         return response
     
     def generate_image(self, prompt):
+        import torch
+        from diffusers import StableDiffusionPipeline
         if not prompt: return None
         
         if "text-to-image" not in self.pipelines:
