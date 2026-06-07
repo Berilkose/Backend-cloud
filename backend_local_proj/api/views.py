@@ -80,7 +80,7 @@ class RoboMunchEngine:
         image = pipe(prompt, num_inference_steps=15).images[0]
         return image
 
-munch_engine = RoboMunchEngine()
+#munch_engine = RoboMunchEngine()
 
 
 # ========================================================
@@ -89,6 +89,7 @@ munch_engine = RoboMunchEngine()
 
 @api_view(['POST'])
 def chat_with_munch(request):
+    munch_engine = RoboMunchEngine()
     user_message = request.data.get('message', '')
     if not user_message:
         return Response({'reply': 'Boş mesaj gönderilemez.'}, status=400)
@@ -103,6 +104,7 @@ def chat_with_munch(request):
 
 @api_view(['POST'])
 def paint_image(request):
+    munch_engine = RoboMunchEngine()
     prompt = request.data.get('prompt', '')
     if not prompt:
         return Response({'error': 'Prompt boş olamaz.'}, status=400)
