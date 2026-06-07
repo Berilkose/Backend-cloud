@@ -1,3 +1,4 @@
+import os
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from django.http import HttpResponse
@@ -18,8 +19,10 @@ class RoboMunchEngine:
         self.device = "cpu"  # CPU üzerinde çalıştırıyoruz
         
         # Hugging Face Login 
-        my_token = "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" 
-        login(token=my_token)
+        my_token = os.getenv("HF_TOKEN")
+        if my_token:
+            login(token=my_token)
+            
         print(f"--- RoboMunch Engine Initialized (CPU) ---")
 
     def _get_pipeline(self, task, model_name, **kwargs):
