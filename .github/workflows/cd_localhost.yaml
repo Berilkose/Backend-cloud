@@ -21,7 +21,6 @@ jobs:
         run: |
           echo "Skipping requirements check..."
 
-      # Eğer port 8000'de çalışan eski bir süreç varsa kapat
       - name: Kill previous app instance
         run: |
           echo "Checking for existing process on port 8000..."
@@ -37,9 +36,9 @@ jobs:
             echo "No process running on port 8000."
           }
 
-      # UYGULAMAYI BAŞLATIRKEN KLASÖRÜ BELİRTİYORUZ
+      
       - name: Launch new version in background
-        # NOT: 'backend' yazan yere manage.py dosyanızın olduğu klasörün tam adını yazın!
+        
         working-directory: "D:/calismalar/EE471 Mini Project/MiniProject4/backend-local/backend_local_proj" 
         run: |
           echo "Starting Django server from working directory..."
